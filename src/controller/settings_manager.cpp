@@ -11,16 +11,6 @@
 
 NFS_NAMESPACE_BEGIN
 
-SettingsManager::~SettingsManager() {
-
-}
-SettingsManager* SettingsManager::setting_manager = nullptr;
-SettingsManager *SettingsManager::instance() {
-  if (setting_manager == nullptr) {
-    setting_manager = new SettingsManager();
-  }
-  return setting_manager;
-}
 SettingsManager::SettingsManager() : QObject(nullptr) {
   settings_ = new QSettings("Siriuso", "NetworkFilesSender", this);
 }
@@ -30,6 +20,10 @@ const QString SettingsManager::logPath() {
     QDir().mkpath(ld);
   }
   return ld;
+}
+
+SettingsManager::~SettingsManager() {
+
 }
 
 NFS_NAMESPACE_END

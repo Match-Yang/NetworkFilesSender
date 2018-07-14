@@ -9,29 +9,26 @@
 #include <QSettings>
 
 #include "common/nfs_namesapce.h"
+#include <common/singleton_template.h>
 
 NFS_NAMESPACE_BEGIN
 
 class SettingsManager : public QObject {
  Q_OBJECT
  public:
-  static SettingsManager *instance();
+  explicit SettingsManager();
   ~SettingsManager();
 
  const QString path() const{return settings_->fileName();}
  const QString logPath();
 
  private:
-  explicit SettingsManager();
 
  private:
   QSettings *settings_;
-
- private:
-  static SettingsManager *setting_manager;
 };
 
-#define SETTINGSINS SettingsManager::instance()
+#define SETTINGSINS Singleton<NFS::SettingsManager>::getInstancePointer()
 
 NFS_NAMESPACE_END
 
