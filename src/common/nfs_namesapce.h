@@ -1,0 +1,14 @@
+//
+// Created by 杨万青 on 2018/7/14.
+//
+
+#ifndef NETWORKFILESSENDER_NFS_NAMESAPCE_H
+#define NETWORKFILESSENDER_NFS_NAMESAPCE_H
+
+#include "plog/log.h"
+
+#define NFS_NAMESPACE_BEGIN namespace NFS {
+
+#define NFS_NAMESPACE_END }
+
+#endif //NETWORKFILESSENDER_NFS_NAMESAPCE_H
