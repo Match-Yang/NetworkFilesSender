@@ -22,12 +22,10 @@ int main(int argc, char *argv[]) {
 
   LOGI << "Config file store at: " << NFS::SETTINGSINS->path();
   LOGI << "Log file store at: " << NFS::SETTINGSINS->logPath();
-  auto info = NFS::DeviceInfoCollector().getDeviceInfomation();
-  LOGW << info.m_storage_capability;
-  LOGW << info.m_storage_free;
-  LOGW << info.m_ip_address;
-  LOGW << info.m_devide_type;
-  LOGW << info.m_devide_name;
+  auto info = NFS::DeviceInfoCollector().getIpAddresses();
+  for (auto ip : info) {
+    LOGD << "[ " << ip.m_address << " , " << ip.m_name << " ]";
+  }
 
   QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 

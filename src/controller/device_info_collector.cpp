@@ -10,24 +10,24 @@
 
 NFS_NAMESPACE_BEGIN
 
-DeviceInfomation NFS::DeviceInfoCollector::getDeviceInfomation() {
-  DeviceInfomation info;
-  info.m_storage_capability = getStorageCapability();
-  info.m_devide_name = getDeviceName();
-  info.m_devide_type = getDeviceType();
-  info.m_ip_address = getIpAddress();
-  info.m_storage_free = getStorageFree();
-  return info;
-}
-QString DeviceInfoCollector::getIpAddress() {
-  auto all_addresses = QNetworkInterface::allAddresses();
-  for (const QHostAddress &address : all_addresses) {
-    if (address.protocol() == QAbstractSocket::IPv4Protocol
-        && address != QHostAddress(QHostAddress::LocalHost)) {
-      return address.toString();
+DeviceIpAddressList DeviceInfoCollector::getIpAddresses() {
+  DeviceIpAddressList ip_list;
+  auto all_interface = QNetworkInterface::allInterfaces();
+  for (const QNetworkInterface &inter : all_interface) {
+    auto entries = inter.addressEntries();
+    for (auto e : entries) {
+      auto ip = e.ip();
+      if (! ip.isNull() && ip.protocol() == QAbstractSocket::IPv4Protocol
+          && ip != QHostAddress(QHostAddress::LocalHost)
+          && e.prefixLength() == 24) {
+        DeviceIpAddress ta;
+        ta.m_address = ip.toString();
+        ta.m_name = inter.humanReadableName();
+        ip_list.append(ta);
+      }
     }
   }
-  return QString();
+  return ip_list;
 }
 QString DeviceInfoCollector::getDeviceName() {
   return QSysInfo::prettyProductName();

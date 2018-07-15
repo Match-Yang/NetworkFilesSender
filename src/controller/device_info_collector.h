@@ -15,6 +15,14 @@ NFS_NAMESPACE_BEGIN
 #define DECL_QSP(DataType, data_name) DataType m_##data_name;\
 Q_PROPERTY(DataType data_name MEMBER m_##data_name)
 
+struct DeviceIpAddress {
+  Q_GADGET
+ public:
+  DECL_QSP(QString, address)
+  DECL_QSP(QString, name)
+};
+typedef QList<DeviceIpAddress> DeviceIpAddressList;
+
 struct DeviceInfomation {
   Q_GADGET
  public:
@@ -33,14 +41,15 @@ class DeviceInfoCollector {
  public:
   explicit DeviceInfoCollector() = default;
 
-  DeviceInfomation getDeviceInfomation();
-
- private:
-  QString getIpAddress();
-  QString getDeviceName();
-  QString getDeviceType();
-  qint64 getStorageFree();
-  qint64 getStorageCapability();
+  /**
+   * Get all ips with netmask 255.255.255.0 for local connection.
+   * @return A list of DeviceIpAddress
+   */
+  Q_INVOKABLE DeviceIpAddressList getIpAddresses();
+  Q_INVOKABLE QString getDeviceName();
+  Q_INVOKABLE QString getDeviceType();
+  Q_INVOKABLE qint64 getStorageFree();
+  Q_INVOKABLE qint64 getStorageCapability();
 };
 
 NFS_NAMESPACE_END
