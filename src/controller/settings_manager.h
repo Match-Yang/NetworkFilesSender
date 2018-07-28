@@ -8,21 +8,30 @@
 #include <QObject>
 #include <QSettings>
 
-#include "common/nfs_namesapce.h"
 #include <common/singleton_template.h>
+#include "common/nfs_namesapce.h"
 
 NFS_NAMESPACE_BEGIN
 
 class SettingsManager : public QObject {
- Q_OBJECT
+  Q_OBJECT
  public:
   explicit SettingsManager();
   ~SettingsManager();
 
- const QString path() const{return settings_->fileName();}
- const QString logPath();
+  const QString path() const { return settings_->fileName(); }
+  const QString logPath();
+  const QVariant value(const QString &group, const QString &key);
+  const QVariant value(const QString &group, const QString &key,
+                       const QVariant &default_value);
+  const void setValue(const QString &group, const QString &key,
+                      const QVariant &value);
+  const QStringList allKeys() const;
+  const QStringList allKeys(const QString &group) const;
 
- private:
+ signals:
+  void valueChanged(const QString &group, const QString &key,
+                    const QVariant &value);
 
  private:
   QSettings *settings_;
@@ -32,4 +41,4 @@ class SettingsManager : public QObject {
 
 NFS_NAMESPACE_END
 
-#endif //NETWORKFILESSENDER_SETTINGS_MANAGER_H
+#endif  // NETWORKFILESSENDER_SETTINGS_MANAGER_H

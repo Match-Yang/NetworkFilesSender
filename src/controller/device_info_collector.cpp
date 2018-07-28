@@ -10,20 +10,20 @@
 
 NFS_NAMESPACE_BEGIN
 
-DeviceIpAddressList DeviceInfoCollector::getIpAddresses() {
-  DeviceIpAddressList ip_list;
+QVariantList DeviceInfoCollector::getIpAddresses() {
+  QVariantList ip_list;
   auto all_interface = QNetworkInterface::allInterfaces();
   for (const QNetworkInterface &inter : all_interface) {
     auto entries = inter.addressEntries();
     for (auto e : entries) {
       auto ip = e.ip();
-      if (! ip.isNull() && ip.protocol() == QAbstractSocket::IPv4Protocol
-          && ip != QHostAddress(QHostAddress::LocalHost)
-          && e.prefixLength() == 24) {
+      if (!ip.isNull() && ip.protocol() == QAbstractSocket::IPv4Protocol &&
+          ip != QHostAddress(QHostAddress::LocalHost) &&
+          e.prefixLength() == 24) {  // netmask 255.255.255.0
         DeviceIpAddress ta;
         ta.m_address = ip.toString();
         ta.m_name = inter.humanReadableName();
-        ip_list.append(ta);
+        ip_list.append(QVariant::fromValue(ta));
       }
     }
   }
@@ -32,9 +32,7 @@ DeviceIpAddressList DeviceInfoCollector::getIpAddresses() {
 QString DeviceInfoCollector::getDeviceName() {
   return QSysInfo::prettyProductName();
 }
-QString DeviceInfoCollector::getDeviceType() {
-  return QSysInfo::productType();
-}
+QString DeviceInfoCollector::getDeviceType() { return QSysInfo::productType(); }
 qint64 DeviceInfoCollector::getStorageCapability() {
   QStorageInfo storage = QStorageInfo::root();
   return storage.bytesTotal();
