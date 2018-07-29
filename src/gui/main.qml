@@ -13,23 +13,33 @@ ApplicationWindow {
 
     ContentsPage {
         id: contents_page
-        leftPadding: nav_page.width
+        leftPadding: nav_page.width + config_swipe.width
         anchors.fill: parent
+    }
+
+    SwipeView {
+        id: config_swipe
+        orientation: Qt.Vertical
+        anchors.left: nav_page.right
+        height: parent.height
+        width: 300
+
+        SettingsPage {
+            id: settings_page
+        }
+
+        DevicesPage {
+
+        }
+
+        currentIndex: nav_page.page_index
     }
 
     NavigationPage {
         id: nav_page
-        width: 260
+//        width: 260
+        current_ip: settings_page.ip_address
         height: parent.height
         anchors.left: parent.left
-    }
-
-    Component.onCompleted: {
-        var ips = device_info_collector.getIpAddresses()
-        console.log(ips)
-        for (var i = 0; i < ips.length; i++) {
-            console.log("Array item:", ips[i].name)
-            console.log("Array item:", ips[i].address)
-        }
     }
 }

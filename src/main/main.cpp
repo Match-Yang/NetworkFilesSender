@@ -49,6 +49,8 @@ int main(int argc, char *argv[]) {
                                            NFS::DICINS);
   engine.rootContext()->setContextProperty("discover_manager",
                                            NFS::DISCOVERINS);
+  engine.rootContext()->setContextProperty("settings_manager",
+                                           NFS::SETTINGSINS);
   engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
   if (engine.rootObjects().isEmpty()) return -1;
 

@@ -3,12 +3,32 @@ import QtQuick.Controls 2.4
 import QtQuick.Controls.Material 2.4
 
 Pane {
-
+    id: root
     property string current_ip: "127.0.0.1"
+    property int page_index: 0
 
     width: 200
     Material.elevation: 5
     padding: 0
+
+    Component.onCompleted: {
+        root.state = settings_manager.value("NavigationPage", "CurrentState", "simple")
+    }
+
+    states: [
+        State {
+            name: "simple"
+            PropertyChanges{target: root; width: 100}
+            PropertyChanges {target: header_labels; visible: false}
+            PropertyChanges {target: discover_switch; text: ""}
+        },
+        State {
+            name: "details"
+            PropertyChanges{target: root; width: 260}
+            PropertyChanges {target: header_labels; visible: true}
+            PropertyChanges {target: discover_switch; text: qsTr("Enable Discover")}
+        }
+    ]
 
     Frame {
         id: header_frame
@@ -35,24 +55,40 @@ Pane {
                 width: parent.width
                 height: parent.height
             }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    if (root.state == "simple") {
+                        root.state = "details"
+                        settings_manager.setValue("NavigationPage", "CurrentState", "details")
+                    } else {
+                        root.state = "simple"
+                        settings_manager.setValue("NavigationPage", "CurrentState", "simple")
+                    }
+                }
+            }
         }
 
-        Label {
-            text: device_info_collector.getDeviceName()
+        Item {
+            id: header_labels
+            height: parent.height
             anchors.left: icon_rect.right
             anchors.leftMargin: 15
-            anchors.top: icon_rect.top
-            font.pixelSize: 12
-            color: "#323c46"
-        }
+            anchors.verticalCenter: icon_rect.verticalCenter
+            Label {
+                text: device_info_collector.getDeviceName()
+                anchors.bottom: parent.verticalCenter
+                font.pixelSize: 12
+                color: "#323c46"
+            }
 
-        Label {
-            text: current_ip
-            anchors.left: icon_rect.right
-            anchors.leftMargin: 15
-            anchors.bottom: icon_rect.bottom
-            font.pixelSize: 10
-            color: "#bfbfbf"
+            Label {
+                text: current_ip
+                anchors.top: parent.verticalCenter
+                font.pixelSize: 10
+                color: "#bfbfbf"
+            }
         }
     }
 
@@ -83,6 +119,7 @@ Pane {
                 text: qsTr("Settings")
                 height: 35
                 width: parent.width
+                onClicked: page_index = 0
             }
 
             TabButton {
@@ -90,12 +127,13 @@ Pane {
                 text: qsTr("Devices")
                 height: 35
                 width: parent.width
+                onClicked: page_index = 1
             }
         }
     }
 
     Switch {
-
+        id: discover_switch
         width: parent.width * 3 / 4
         height: 50
         anchors.bottom: parent.bottom

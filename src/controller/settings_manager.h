@@ -21,13 +21,13 @@ class SettingsManager : public QObject {
 
   const QString path() const { return settings_->fileName(); }
   const QString logPath();
-  const QVariant value(const QString &group, const QString &key);
-  const QVariant value(const QString &group, const QString &key,
-                       const QVariant &default_value);
-  const void setValue(const QString &group, const QString &key,
-                      const QVariant &value);
-  const QStringList allKeys() const;
-  const QStringList allKeys(const QString &group) const;
+  Q_INVOKABLE const QVariant value(const QString &group, const QString &key);
+  Q_INVOKABLE const QVariant value(const QString &group, const QString &key,
+                                   const QVariant &default_value);
+  Q_INVOKABLE const void setValue(const QString &group, const QString &key,
+                                  const QVariant &value);
+  Q_INVOKABLE const QStringList allKeys() const;
+  Q_INVOKABLE const QStringList allKeys(const QString &group) const;
 
  signals:
   void valueChanged(const QString &group, const QString &key,

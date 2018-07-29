@@ -4,5 +4,9 @@
         <file>qtquickcontrols2.conf</file>
         <file>NavigationPage.qml</file>
         <file>ContentsPage.qml</file>
+        <file>SettingsPage.qml</file>
+        <file>DevicesPage.qml</file>
+        <file>SettingsItem.qml</file>
+        <file>SettingsItemIpAddress.qml</file>
     </qresource>
 </RCC>

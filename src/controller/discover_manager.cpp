@@ -17,6 +17,8 @@ const qint16 kDefaultPort = 4545;
 const QString kSettingsGroup = "DiscoverManager";
 const QString kSettingsAddressKey = "GroupAddress";
 const QString kSettingsPortKey = "GroupPort";
+const QString kSettingTcpIpGroup = "SettingsItem";  // same as qml
+const QString kSettingTcpIpKey = "IpAddress";       // same as qml
 }  // namespace
 
 DiscoverManager::DiscoverManager() : QObject(nullptr) {
@@ -32,6 +34,8 @@ DiscoverManager::DiscoverManager() : QObject(nullptr) {
           .toString());
   port_ = SETTINGSINS->value(kSettingsGroup, kSettingsPortKey, kDefaultPort)
               .toInt();
+  current_tcp_ip_ =
+      SETTINGSINS->value(kSettingTcpIpGroup, kSettingTcpIpKey, "").toString();
   connect(SETTINGSINS, &SettingsManager::valueChanged, this,
           [=](const QString &group, const QString &key, const QVariant &value) {
             if (group == kSettingsGroup) {
@@ -42,6 +46,10 @@ DiscoverManager::DiscoverManager() : QObject(nullptr) {
                 port_ = value.toInt();
                 udp_receiver_socket_4_.bind(QHostAddress::AnyIPv4, port_,
                                             QUdpSocket::ShareAddress);
+              }
+            } else if (group == kSettingTcpIpGroup) {
+              if (key == kSettingTcpIpKey) {
+                current_tcp_ip_ = value.toString();
               }
             }
           });
@@ -73,7 +81,11 @@ void DiscoverManager::readTargetInfo() {
   in_stream >> info.m_ip_address;
   in_stream >> info.m_storage_capability;
   in_stream >> info.m_storage_free;
-  //  qDebug() << __FUNCTION__ << info.m_devide_name << info.m_ip_address;
+  if (info.m_ip_address == current_tcp_ip_) {
+    qDebug() << "****" << __FUNCTION__ << current_tcp_ip_;
+  } else {
+    qDebug() << "Others: " << info.m_ip_address;
+  }
 }
 
 void DiscoverManager::initSenderSocket() {

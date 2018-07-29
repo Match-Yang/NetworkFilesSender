@@ -24,7 +24,6 @@ class DiscoverManager : public QObject {
 
   Q_INVOKABLE void setDeviceInfo(const QVariantMap &v);
   Q_INVOKABLE inline void enableDicover(bool e) {
-    qDebug() << "====" << e;
     if (e) {
       sender_timer_->start();
     } else {
@@ -47,6 +46,7 @@ class DiscoverManager : public QObject {
   QUdpSocket udp_receiver_socket_4_;
   QHostAddress group_address_4_;
   qint16 port_;
+  QString current_tcp_ip_;
 };
 
 #define DISCOVERINS Singleton<NFS::DiscoverManager>::getInstancePointer()
