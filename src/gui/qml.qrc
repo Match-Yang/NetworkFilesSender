@@ -8,5 +8,6 @@
         <file>DevicesPage.qml</file>
         <file>SettingsItem.qml</file>
         <file>SettingsItemIpAddress.qml</file>
+        <file>DevicesItem.qml</file>
     </qresource>
 </RCC>

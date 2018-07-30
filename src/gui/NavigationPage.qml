@@ -115,16 +115,15 @@ Pane {
             spacing: 10
 
             TabButton {
-                id: settings_button
-                text: qsTr("Settings")
+                id: devices_button
+                text: qsTr("Devices")
                 height: 35
                 width: parent.width
                 onClicked: page_index = 0
             }
-
             TabButton {
-                id: devices_button
-                text: qsTr("Devices")
+                id: settings_button
+                text: qsTr("Settings")
                 height: 35
                 width: parent.width
                 onClicked: page_index = 1

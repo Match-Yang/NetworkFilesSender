@@ -5,6 +5,8 @@
 #ifndef NETWORKFILESSENDER_DISCOVER_MANAGER_H
 #define NETWORKFILESSENDER_DISCOVER_MANAGER_H
 
+#include <utility>
+
 #include <QHostAddress>
 #include <QObject>
 #include <QTimer>
@@ -18,6 +20,8 @@ NFS_NAMESPACE_BEGIN
 
 class DiscoverManager : public QObject {
   Q_OBJECT
+  Q_PROPERTY(QVariantList others_devices READ others_devices WRITE
+                 set_others_devices NOTIFY othersDevicesChanged)
  public:
   explicit DiscoverManager();
   ~DiscoverManager();
@@ -31,6 +35,19 @@ class DiscoverManager : public QObject {
     }
   }
 
+  QVariantList others_devices() const { return m_others_devices; }
+
+ public slots:
+  void set_others_devices(QVariantList others_devices) {
+    if (m_others_devices == others_devices) return;
+
+    m_others_devices = others_devices;
+    emit othersDevicesChanged(m_others_devices);
+  }
+
+ signals:
+  void othersDevicesChanged(QVariantList others_devices);
+
  private:
   void sendSelfInfo();
   void readTargetInfo();
@@ -38,15 +55,21 @@ class DiscoverManager : public QObject {
   void initSenderSocket();
   void initReceiverSocket();
 
+  QVariantList infoMapToList() const;
+
  private:
   QByteArray info_array_;
   DeviceInfomation target_info_;
   QTimer *sender_timer_;
+  QTimer *counter_timer_;
   QUdpSocket udp_sender_socket_4_;
   QUdpSocket udp_receiver_socket_4_;
   QHostAddress group_address_4_;
   qint16 port_;
   QString current_tcp_ip_;
+  QMap<QString, std::pair<int, DeviceInfomation>>
+      others_info_map_;  ///< <ip, <counter, info>>
+  QVariantList m_others_devices;
 };
 
 #define DISCOVERINS Singleton<NFS::DiscoverManager>::getInstancePointer()

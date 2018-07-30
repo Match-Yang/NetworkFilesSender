@@ -27,6 +27,25 @@ DiscoverManager::DiscoverManager() : QObject(nullptr) {
   sender_timer_->setInterval(kDiscoverInterval);
   connect(sender_timer_, &QTimer::timeout, this, [=] { sendSelfInfo(); });
 
+  counter_timer_ = new QTimer(this);
+  counter_timer_->setSingleShot(false);
+  counter_timer_->setInterval(kDiscoverInterval);
+  connect(counter_timer_, &QTimer::timeout, this, [=] {
+    bool need_update = false;
+    for (auto k : others_info_map_.keys()) {
+      others_info_map_[k].first -= 1;
+      // remove the info if it no longer update
+      if (others_info_map_[k].first <= 0) {
+        need_update = true;
+        others_info_map_.remove(k);
+      }
+    }
+    if (need_update) {
+      set_others_devices(infoMapToList());
+    }
+  });
+  counter_timer_->start();
+
   // init socket
   group_address_4_ = QHostAddress(
       SETTINGSINS
@@ -53,6 +72,7 @@ DiscoverManager::DiscoverManager() : QObject(nullptr) {
               }
             }
           });
+
   initSenderSocket();
   initReceiverSocket();
 }
@@ -81,10 +101,17 @@ void DiscoverManager::readTargetInfo() {
   in_stream >> info.m_ip_address;
   in_stream >> info.m_storage_capability;
   in_stream >> info.m_storage_free;
-  if (info.m_ip_address == current_tcp_ip_) {
-    qDebug() << "****" << __FUNCTION__ << current_tcp_ip_;
+
+  if (!others_info_map_.contains(info.m_ip_address)) {
+    // 把counter的初始值设置为10是为了防止counter timer刚好触发把计数归零
+    //其实随便设置一个比较大的数都无所谓，因为一直接受不到消息的话，计数总能减为0
+    others_info_map_[info.m_ip_address] = std::make_pair(10, info);
+    LOGI << "New device: " << info.m_ip_address;
+    set_others_devices(infoMapToList());
   } else {
-    qDebug() << "Others: " << info.m_ip_address;
+    // increase counter
+    // 反正倒数计时器不能一下给减到0就可以了，计时器的存在也只是为了验证是否一直有更新而已
+    others_info_map_[info.m_ip_address].first = 10;
   }
 }
 
@@ -100,6 +127,14 @@ void DiscoverManager::initReceiverSocket() {
   udp_receiver_socket_4_.joinMulticastGroup(group_address_4_);
   connect(&udp_receiver_socket_4_, &QUdpSocket::readyRead, this,
           &DiscoverManager::readTargetInfo);
+}
+
+QVariantList DiscoverManager::infoMapToList() const {
+  QVariantList list;
+  for (auto v : others_info_map_.values()) {
+    list << QVariant::fromValue(v.second);
+  }
+  return list;
 }
 
 NFS_NAMESPACE_END

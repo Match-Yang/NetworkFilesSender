@@ -17,14 +17,6 @@ Pane {
         leftPadding: 10
         spacing: 5
 
-        Label {
-            id: title_lable
-            text: qsTr("Settings")
-            font.pixelSize: 20
-            height: 50
-            verticalAlignment: Text.AlignVCenter
-        }
-
         SettingsItemIpAddress {
             id: si_ip_address
             height: 40

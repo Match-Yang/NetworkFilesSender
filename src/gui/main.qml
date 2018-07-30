@@ -24,12 +24,11 @@ ApplicationWindow {
         height: parent.height
         width: 300
 
-        SettingsPage {
-            id: settings_page
-        }
-
         DevicesPage {
 
+        }
+        SettingsPage {
+            id: settings_page
         }
 
         currentIndex: nav_page.page_index
